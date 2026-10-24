@@ -20,3 +20,4 @@ public class Bidder extends User{
   public void displayRole(){
     System.out.println("Role: Bidder (Người mua/Đấu giá) - Tên: " + getName());
   }
+}

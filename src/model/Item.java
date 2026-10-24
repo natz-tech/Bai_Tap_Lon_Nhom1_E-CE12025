@@ -10,6 +10,15 @@ public abstract class Item{
         this.name = name;
         this.startingPrice = startingPrice;
     }
-    public abstract void showItemDetails();
 
+    public String getItemId() { return itemId; }
+    public void setItemId(String itemId) { this.itemId = itemId; }
+
+    public String getName() { return name; }
+    public void setName(String name) { this.name = name; }
+
+    public double getStartingPrice() { return startingPrice; }
+    public void setStartingPrice(double  startingPrice) { this.startingPrice = startingPrice; }
+    
+    public abstract void showItemDetails();
 }

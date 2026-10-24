@@ -18,7 +18,7 @@ public class Electronics extends Item {
 
     @Override
     public void showItemDetails() {
-        System.out.printf("[Electronics] Brand: %s | Warranty: %d months%n", brand, warrantyMonths);
+        System.out.printf("[Do dien tu] Thuong hieu: %s | Bao hanh: %d thang%n", brand, warrantyMonths);
     }
 
     @Override

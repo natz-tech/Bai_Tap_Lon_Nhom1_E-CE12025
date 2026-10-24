@@ -18,7 +18,7 @@ public class Art extends Item {
 
     @Override
     public void showItemDetails() {
-        System.out.printf("[Art] Artist: %s | Year Created: %d%n", artist, yearCreated);
+        System.out.printf("[Tac pham nghe thuat] Tac gia: %s | Nam sang tac: %d%n", artist, yearCreated);
     }
 
     @Override

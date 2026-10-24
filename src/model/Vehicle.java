@@ -18,7 +18,7 @@ public class Vehicle extends Item {
 
     @Override
     public void showItemDetails() {
-        System.out.printf("[Vehicle] Model: %s | Mileage: %,d km%n", modelName, mileage);
+        System.out.printf("[Phuong tien] Dong xe: %s | ODO da di: %,d km%n", modelName, mileage);
     }
 
     @Override

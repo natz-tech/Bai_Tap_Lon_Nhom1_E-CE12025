@@ -12,12 +12,12 @@ public abstract class Item implements Serializable {
     private double currentHighestBid;
 
     public Item(String id, String name, double startingPrice) {
-        this(id, name, "No description", startingPrice);
+        this(id, name, "Chua co mo ta", startingPrice);
     }
 
     public Item(String id, String name, String description, double startingPrice) {
         if (startingPrice < 0) {
-            throw new IllegalArgumentException("Starting price cannot be negative!");
+            throw new IllegalArgumentException("Gia khoi diem khong duoc am!");
         }
         this.itemId = id;
         this.name = name;
@@ -32,10 +32,10 @@ public abstract class Item implements Serializable {
 
     public void printInfo() {
         System.out.println("=========================================");
-        System.out.printf("Item ID: %s | Name: %s%n", itemId, name);
-        System.out.println("Description: " + description);
-        System.out.printf("Starting Price: %,.2f | Current Highest Bid: %,.2f%n", startingPrice, currentHighestBid);
-        System.out.printf("Min Bid Increment: %,.2f%n", getMinBidIncrement());
+        System.out.printf("Ma SP: %s | Ten SP: %s%n", itemId, name);
+        System.out.println("Mo ta: " + description);
+        System.out.printf("Gia khoi diem: %,.0f VND | Gia cao nhat hien tai: %,.0f VND%n", startingPrice, currentHighestBid);
+        System.out.printf("Buoc gia toi thieu: %,.0f VND%n", getMinBidIncrement());
         showItemDetails();
         System.out.println("=========================================");
     }

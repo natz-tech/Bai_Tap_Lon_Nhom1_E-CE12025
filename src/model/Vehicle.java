@@ -23,6 +23,7 @@ public class Vehicle extends Item{
   public void setMileage(double mileage){
     this.mileage = mileage;
   }
+  
   @Override
   public void showItemDetails() {
     System.out.println("[Vehicle] ID: " + getItemId() + " | Tên xe: " + getName() + " | Giá khởi điểm: " + getStartingPrice() + " | Hãng: " + brand + " | Số km đã đi: " + mileage);

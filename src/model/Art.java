@@ -1,5 +1,6 @@
 package model;
 
+
 public class Art extends Item {
     private String artist;
     private int yearCreated;
@@ -32,3 +33,4 @@ public class Art extends Item {
     public int getYearCreated() { return yearCreated; }
     public void setYearCreated(int yearCreated) { this.yearCreated = yearCreated; }
 }
+

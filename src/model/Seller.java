@@ -13,7 +13,7 @@ public class Seller extends User{
   }
 
   public void setStoreName(String storeName){
-    this storeName = storeName;
+    this.storeName = storeName;
   }
 
   @Override

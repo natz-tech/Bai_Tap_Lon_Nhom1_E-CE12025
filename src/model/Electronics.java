@@ -1,23 +1,34 @@
 package model;
 
-public class Electronics extends Item{
-  private int warrantyPeriod;
+public class Electronics extends Item {
+    private String brand;
+    private int warrantyMonths;
 
-  public Electronics (String itemId, String name, double startingPrice, int warrantyPeriod){
-    super(itemId, name, startingPrice);
-    this.warrantyPeriod = warrantyPeriod;
-  }
+    public Electronics(String id, String name, double startingPrice, String brand, int warrantyMonths) {
+        super(id, name, startingPrice);
+        this.brand = brand;
+        this.warrantyMonths = warrantyMonths;
+    }
 
-  public int getWarrantyPeriod(){
-    return warrantyPeriod;
-  }
+    public Electronics(String id, String name, String description, double startingPrice, String brand, int warrantyMonths) {
+        super(id, name, description, startingPrice);
+        this.brand = brand;
+        this.warrantyMonths = warrantyMonths;
+    }
 
-  public void setWarrantyPeriod(int warrantyPeriod){
-    this.warrantyPeriod = warrantyPeriod;
-  }
-  
-  @Override
-  public void showItemDetails() {
-    System.out.println("[Electronics] ID: " + getItemId() + " | Tên: " + getName() + " | Giá khởi điểm: " + getStartingPrice() + " | Bảo hành: " + warrantyPeriod + " tháng");
-  }
+    @Override
+    public void showItemDetails() {
+        System.out.printf("[Do dien tu] Thuong hieu: %s | Bao hanh: %d thang%n", brand, warrantyMonths);
+    }
+
+    @Override
+    public double getMinBidIncrement() {
+        return getStartingPrice() * 0.05;
+    }
+
+    public String getBrand() { return brand; }
+    public void setBrand(String brand) { this.brand = brand; }
+
+    public int getWarrantyMonths() { return warrantyMonths; }
+    public void setWarrantyMonths(int warrantyMonths) { this.warrantyMonths = warrantyMonths; }
 }

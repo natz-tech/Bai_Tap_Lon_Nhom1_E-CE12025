@@ -1,4 +1,4 @@
-package manager;
+package model;
 
 import model.Auction;
 import java.util.HashMap;

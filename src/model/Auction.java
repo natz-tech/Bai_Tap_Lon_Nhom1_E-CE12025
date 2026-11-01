@@ -5,9 +5,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Auction {
-    
-    // Enum matching your project specification (Section 3.1.4)[cite: 6]
-    public enum AuctionStatus 
+
+    public enum AuctionStatus
     {
         OPEN, RUNNING, FINISHED, PAID, CANCELED
     }
@@ -20,7 +19,9 @@ public class Auction {
     private LocalDateTime startTime;
     private LocalDateTime endTime;
 
-    public Auction(String auctionId, Item item, double startingPrice, LocalDateTime startTime, LocalDateTime endTime) 
+    private List<AuctionObserver> observers = new ArrayList<>();
+
+    public Auction(String auctionId, Item item, double startingPrice, LocalDateTime startTime, LocalDateTime endTime)
     {
         this.auctionId = auctionId;
         this.item = item;
@@ -31,63 +32,89 @@ public class Auction {
         this.endTime = endTime;
     }
 
-    // Thread-safe method to validate and add a bid
-    public synchronized boolean addBid(Bid bid) 
+    public void addObserver(AuctionObserver observer) {
+        if (!observers.contains(observer)) {
+            observers.add(observer);
+        }
+    }
+
+    public void removeObserver(AuctionObserver observer) {
+        observers.remove(observer);
+    }
+
+    public void notifyObserversNewBid(Bid bid) {
+        for (AuctionObserver observer : observers) {
+            observer.onNewBid(this, bid);
+        }
+    }
+
+    public void notifyObserversAuctionFinished() {
+        for (AuctionObserver observer : observers) {
+            observer.onAuctionFinished(this);
+        }
+    }
+
+    public synchronized boolean addBid(Bid bid)
     {
-        // Can only bid if the auction is running
-        if (status != AuctionStatus.RUNNING) 
+        if (status != AuctionStatus.RUNNING)
         {
-            return false; 
+            return false;
         }
-        
-        if (bid.getAmount() <= currentHighestBid) 
+
+        if (bid.getAmount() <= currentHighestBid)
         {
-            return false; // Bid must be strictly higher than the current price[cite: 6]
+            return false;
         }
-        
+
         currentHighestBid = bid.getAmount();
         bids.add(bid);
+
+        notifyObserversNewBid(bid);
+
         return true;
     }
 
-    // Automatically check and close auction based on time (Section 3.1.4)[cite: 6]
-    public void checkAndUpdateStatus() 
+    public void checkAndUpdateStatus()
     {
         LocalDateTime now = LocalDateTime.now();
-        if (status == AuctionStatus.RUNNING && now.isAfter(endTime)) 
+        if (status == AuctionStatus.RUNNING && now.isAfter(endTime))
         {
             this.status = AuctionStatus.FINISHED;
+            notifyObserversAuctionFinished();
         }
     }
 
-    public void setStatus(AuctionStatus status) 
+    public void finishAuction()
     {
-        this.status = status;
+        this.status = AuctionStatus.FINISHED;
+        notifyObserversAuctionFinished();
     }
 
-    // Getters
-    public String getAuctionId() 
+    public void setStatus(AuctionStatus status)
     {
+        this.status = status;
+        if (status == AuctionStatus.FINISHED) {
+            notifyObserversAuctionFinished();
+        }
+    }
+
+    public String getAuctionId() {
         return auctionId;
     }
 
-    public Item getItem() 
-    {
+    public Item getItem() {
         return item;
     }
 
-    public double getCurrentHighestBid() 
-    {
-        return currentHighestBid;[cite: 6]
+    public double getCurrentHighestBid() {
+        return currentHighestBid;
     }
 
-    public List<Bid> getBids() 
-    {
+    public List<Bid> getBids() {
         return bids;
     }
 
-    public AuctionStatus getStatus() 
-    {
+    public AuctionStatus getStatus() {
         return status;
     }
 }

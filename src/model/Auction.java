@@ -19,6 +19,8 @@ public class Auction {
     private LocalDateTime startTime;
     private LocalDateTime endTime;
 
+    // Khôi phục lại danh sách observers của bạn
+    private List<AuctionObserver> observers; 
 
     private final ReentrantLock lock = new ReentrantLock();
 
@@ -30,9 +32,60 @@ public class Auction {
         this.status = AuctionStatus.OPEN;
         this.startTime = startTime;
         this.endTime = endTime;
+        this.observers = new ArrayList<>();
+    }
+
+    public void addObserver(AuctionObserver observer) {
+        lock.lock();
+        try {
+            if (!observers.contains(observer)) {
+                observers.add(observer);
+            }
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    public void removeObserver(AuctionObserver observer) {
+        lock.lock();
+        try {
+            observers.remove(observer);
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    public void notifyObserversNewBid(Bid bid) {
+        // Tạo một bản sao để tránh lỗi ConcurrentModificationException khi duyệt danh sách
+        List<AuctionObserver> snapshot;
+        lock.lock();
+        try {
+            snapshot = new ArrayList<>(observers);
+        } finally {
+            lock.unlock();
+        }
+        
+        for (AuctionObserver observer : snapshot) {
+            observer.onNewBid(this, bid);
+        }
+    }
+
+    public void notifyObserversAuctionFinished() {
+        List<AuctionObserver> snapshot;
+        lock.lock();
+        try {
+            snapshot = new ArrayList<>(observers);
+        } finally {
+            lock.unlock();
+        }
+
+        for (AuctionObserver observer : snapshot) {
+            observer.onAuctionFinished(this);
+        }
     }
 
     public boolean addBid(Bid bid) {
+        boolean success = false;
         lock.lock(); // Bắt đầu khóa
         try {
             checkAndUpdateStatus();
@@ -52,10 +105,16 @@ public class Auction {
                 item.setCurrentHighestBid(currentHighestBid);
             }
             bids.add(bid);
-            return true;
+            success = true;
         } finally {
             lock.unlock();
         }
+
+        // Gọi hàm notify bên ngoài khối try-finally (sau khi unlock) để an toàn cho đa luồng
+        if (success) {
+            notifyObserversNewBid(bid);
+        }
+        return success;
     }
 
     public void checkAndUpdateStatus() {
@@ -95,6 +154,7 @@ public class Auction {
     }
 
     public boolean finishAuction() {
+        boolean changed = false;
         lock.lock();
         try {
             if (status != AuctionStatus.RUNNING) {
@@ -103,10 +163,16 @@ public class Auction {
             }
             this.status = AuctionStatus.FINISHED;
             System.out.println("Phien dau gia [" + auctionId + "] da ket thuc: RUNNING -> FINISHED");
-            return true;
+            changed = true;
         } finally {
             lock.unlock();
         }
+        
+        // Gọi hàm notify khi phiên thực sự đã được kết thúc
+        if (changed) {
+            notifyObserversAuctionFinished();
+        }
+        return changed;
     }
 
     public boolean markAsPaid() {
@@ -221,7 +287,6 @@ public class Auction {
     public List<Bid> getBids() {
         lock.lock();
         try {
-
             return new ArrayList<>(bids);
         } finally {
             lock.unlock();

@@ -19,7 +19,6 @@ public class Auction {
     private LocalDateTime startTime;
     private LocalDateTime endTime;
 
-    // Khôi phục lại danh sách observers của bạn
     private List<AuctionObserver> observers; 
 
     private final ReentrantLock lock = new ReentrantLock();
@@ -56,7 +55,6 @@ public class Auction {
     }
 
     public void notifyObserversNewBid(Bid bid) {
-        // Tạo một bản sao để tránh lỗi ConcurrentModificationException khi duyệt danh sách
         List<AuctionObserver> snapshot;
         lock.lock();
         try {
@@ -86,7 +84,7 @@ public class Auction {
 
     public boolean addBid(Bid bid) {
         boolean success = false;
-        lock.lock(); // Bắt đầu khóa
+        lock.lock();
         try {
             checkAndUpdateStatus();
 
@@ -110,7 +108,6 @@ public class Auction {
             lock.unlock();
         }
 
-        // Gọi hàm notify bên ngoài khối try-finally (sau khi unlock) để an toàn cho đa luồng
         if (success) {
             notifyObserversNewBid(bid);
         }
@@ -168,7 +165,6 @@ public class Auction {
             lock.unlock();
         }
         
-        // Gọi hàm notify khi phiên thực sự đã được kết thúc
         if (changed) {
             notifyObserversAuctionFinished();
         }
